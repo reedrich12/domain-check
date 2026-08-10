@@ -96,7 +96,7 @@
     {
       "id": "U5",
       "title": "Verdict engine combining RDAP and DNS signals with confidence",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U3", "U4"],
       "allowed_paths": [
         "src/domain_check/verdict.py"
