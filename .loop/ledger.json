@@ -72,7 +72,7 @@
     {
       "id": "U3",
       "title": "RDAP client: IANA bootstrap, lookup, status classification",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U2"],
       "allowed_paths": [
         "src/domain_check/rdap.py"
