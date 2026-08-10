@@ -14,3 +14,8 @@
 - **Attempted:** U2 validate.py: normalize() with lowercase/trailing-dot strip, per-label punycode via Python's idna codec, LDH regex per label, 253-octet total cap.
 - **Outcome:** Accepted. 12/12 acceptance, verify 15/15 (U1+U2) exit 0, guard clean. Tagged unit/U2-accepted (1c8290a, local tag only).
 - **Conclusion:** Convert IDN labels to punycode BEFORE regex/length checks so limits apply to wire format; the idna codec handles per-label encoding cleanly. Validate each label with one LDH regex rather than separate hyphen/charset checks.
+
+## Iteration 4 — 2026-08-10
+- **Attempted:** U3 rdap.py: bootstrap-driven lookup with injectable httpx transport, https-first endpoint selection, 200/404/else -> registered/available/unknown, raw_status from the RDAP status array.
+- **Outcome:** Accepted. 4/4 acceptance, verify 19/19 (U1-U3) exit 0, guard clean. Tagged unit/U3-accepted (61df64b, local tag only).
+- **Conclusion:** Injected transports must bypass the module bootstrap cache or tests cross-contaminate. Classify only 404 as available — 429/5xx map to unknown so throttling can't masquerade as availability (mirrors the U5 invariant at the RDAP layer).
