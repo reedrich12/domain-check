@@ -3,3 +3,4 @@ iter=2 units_accepted=1 tests_passing=3 note=U1-accepted
 iter=2 addendum: unit/U1-accepted=0e6ece1 (tags are local-only: env push policy 403s non-branch refs; accepted SHAs recorded here as durable fallback)
 iter=3 units_accepted=2 tests_passing=15 note=U2-accepted=1c8290a
 iter=4 units_accepted=3 tests_passing=19 note=U3-accepted=61df64b
+iter=5 units_accepted=4 tests_passing=23 note=U4-accepted=482841c

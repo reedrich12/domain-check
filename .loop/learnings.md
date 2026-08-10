@@ -19,3 +19,8 @@
 - **Attempted:** U3 rdap.py: bootstrap-driven lookup with injectable httpx transport, https-first endpoint selection, 200/404/else -> registered/available/unknown, raw_status from the RDAP status array.
 - **Outcome:** Accepted. 4/4 acceptance, verify 19/19 (U1-U3) exit 0, guard clean. Tagged unit/U3-accepted (61df64b, local tag only).
 - **Conclusion:** Injected transports must bypass the module bootstrap cache or tests cross-contaminate. Classify only 404 as available — 429/5xx map to unknown so throttling can't masquerade as availability (mirrors the U5 invariant at the RDAP layer).
+
+## Iteration 5 — 2026-08-10
+- **Attempted:** U4 dnscheck.py: probe() over a _query_ns seam (dnspython NS resolve with raise_on_no_answer=False), NxDomain/DnsTimeout exception types per the test contract.
+- **Outcome:** Accepted. 4/4 acceptance, verify 23/23 (U1-U4) exit 0, guard clean. Tagged unit/U4-accepted (482841c, local tag only).
+- **Conclusion:** raise_on_no_answer=False lets 'name exists but no NS' surface as an empty list -> no_dns, distinct from NXDOMAIN. Catch-all -> unknown keeps SERVFAIL from ever implying anything about availability.
