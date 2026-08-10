@@ -10,3 +10,4 @@ iter=8 units_accepted=7 tests_passing=44 note=U7-accepted=5576374
 iter=9 units_accepted=8 tests_passing=47 note=U8-accepted=6ae7628
 iter=10 units_accepted=9 tests_passing=51 note=U9-accepted=d440a9c
 iter=11 units_accepted=10 tests_passing=54 note=U10-accepted=12caadb;all-gate-green-x2;live-blocked-by-sandbox-egress
+iter=12 units_accepted=10 tests_passing=60 note=done_when-satisfied;--all--live-green-x2(54+6);coverage=1198/1200

@@ -183,5 +183,12 @@
     "max_wall_clock_hours": 6,
     "notes": "One unit per iteration; the verify gate must pass for a unit before it is marked done. Iteration cap raised from 24 to 30 with amendment A1 (two extra units plus the double live-pass done gate)."
   },
+  "done_state": {
+    "satisfied": true,
+    "date": "2026-08-10",
+    "units_done": 10,
+    "evidence": "checks/verify.sh --all --live passed twice consecutively on a network-open machine: run 1 and run 2 each 54/54 offline plus 6/6 live, VERIFY: PASS, exit 0. Live coverage measured 1200 TLDs in the IANA bootstrap, 1198 resolvable (>= 1000 required), 2 unresolvable listed by name (kg, mg). Porkbun purchase URL answered HTTP < 400 and echoed the domain, so no fallback switch was needed.",
+    "note": "Earlier cloud-session runs could not reach RDAP or registrar hosts (egress restricted to GitHub); the live gate was completed after teleporting the session to the user's machine."
+  },
   "provenance": "Baseline authored best-effort in a cloud session without access to the original LOOP-domaincheck.md spec (local file was unreachable); scope confirmed with the user as an availability-checker CLI. Amendment A1 reconciles the baseline against the spec's requirements as relayed and approved by the user."
 }
