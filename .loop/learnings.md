@@ -39,3 +39,8 @@
 - **Attempted:** U7 output.py (envelope with UTC Z timestamp) + cli.py wiring (bulk.check_many over positionals and --input, --json vs text output).
 - **Outcome:** Accepted. 3/3 acceptance, verify 44/44 (U1-U7) exit 0 including U1's CLI contract unregressed, guard clean. Tagged unit/U7-accepted (5576374, local tag only).
 - **Conclusion:** isoformat(timespec='seconds').replace('+00:00','Z') satisfies both the schema's date-time format and the test's Z/+ check. Rows pass through untouched so U9's purchase_url will flow into the envelope without output.py changes.
+
+## Iteration 9 — 2026-08-10
+- **Attempted:** U8: README Install/Usage sections (--json, --input, exit codes); entry point and version parity already existed from U1/baseline.
+- **Outcome:** Accepted. 3/3 acceptance, verify 47/47 (U1-U8) exit 0, guard clean. Tagged unit/U8-accepted (6ae7628, local tag only).
+- **Conclusion:** Docs-only unit; replacing the stale 'baseline only, tests red' banner mattered as much as adding usage — README now describes the shipped CLI, not the scaffold. Smallest unit so far; front-loading pyproject in the baseline made it so.
