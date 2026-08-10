@@ -24,3 +24,8 @@
 - **Attempted:** U4 dnscheck.py: probe() over a _query_ns seam (dnspython NS resolve with raise_on_no_answer=False), NxDomain/DnsTimeout exception types per the test contract.
 - **Outcome:** Accepted. 4/4 acceptance, verify 23/23 (U1-U4) exit 0, guard clean. Tagged unit/U4-accepted (482841c, local tag only).
 - **Conclusion:** raise_on_no_answer=False lets 'name exists but no NS' surface as an empty list -> no_dns, distinct from NXDOMAIN. Catch-all -> unknown keeps SERVFAIL from ever implying anything about availability.
+
+## Iteration 6 — 2026-08-10
+- **Attempted:** U5 verdict.py: decide() as an explicit rule cascade with documented confidence tiers (0.99/0.95/0.70/0.60/<=0.40) and sources = signals actually used.
+- **Outcome:** Accepted. 15/15 acceptance (incl. the 8-case A1 invariant matrix), verify 38/38 (U1-U5) exit 0, guard clean. Tagged unit/U5-accepted (fe64661, local tag only).
+- **Conclusion:** Ordering the cascade by RDAP authority first makes the invariant structural: the available branch is only reachable when rdap_status=='available', so no DNS input can produce it. Conflicts resolve toward registered with sources=['dns'] since DNS presence is the deciding evidence.
