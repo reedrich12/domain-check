@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "domain-check"
+version = "0.1.0"
+description = "CLI to check domain availability via RDAP with DNS fallback"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.27",
+    "dnspython>=2.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "jsonschema>=4.21",
+]
+
+[project.scripts]
+domain-check = "domain_check.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "live: acceptance tests that hit real RDAP/DNS endpoints (run explicitly with -m live)",
+]

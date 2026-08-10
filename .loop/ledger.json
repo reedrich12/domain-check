@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "goal": "Implement domain-check: a CLI that reports whether domains are registered or available via RDAP with DNS fallback, with bulk input and schema-conformant JSON output.",
+  "done_when": "All units U1-U8 have status=done, checks/verify.sh passes offline, and checks/verify.sh --live passes against real RDAP/DNS.",
+  "protocol": {
+    "one_unit_per_iteration": true,
+    "unit_lifecycle": ["pending", "in_progress", "done", "failed"],
+    "rules": [
+      "Pick the first pending unit whose dependencies are all done; set it in_progress.",
+      "Only touch files listed in the unit's allowed_paths (plus this ledger). manifest_guard.py enforces this.",
+      "A unit is done only when its acceptance command passes AND checks/verify.sh does not regress previously-done units.",
+      "Never edit files under tests/, tests_live/, checks/, or schema/ — the baseline gate is immutable during the loop.",
+      "On acceptance failure, increment attempts; at max_attempts mark the unit failed and halt."
+    ]
+  },
+  "units": [
+    {
+      "id": "U1",
+      "title": "CLI skeleton: argument parsing, usage, version, exit codes",
+      "status": "pending",
+      "depends_on": [],
+      "allowed_paths": [
+        "src/domain_check/cli.py",
+        "src/domain_check/__main__.py",
+        "src/domain_check/__init__.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u1_cli.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U2",
+      "title": "Domain validation and normalization (case, trailing dot, IDN/punycode)",
+      "status": "pending",
+      "depends_on": [],
+      "allowed_paths": [
+        "src/domain_check/validate.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u2_validation.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U3",
+      "title": "RDAP client: IANA bootstrap, lookup, status classification",
+      "status": "pending",
+      "depends_on": ["U2"],
+      "allowed_paths": [
+        "src/domain_check/rdap.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u3_rdap.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U4",
+      "title": "DNS fallback probe (NS lookup, NXDOMAIN handling)",
+      "status": "pending",
+      "depends_on": ["U2"],
+      "allowed_paths": [
+        "src/domain_check/dnscheck.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u4_dns.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U5",
+      "title": "Verdict engine combining RDAP and DNS signals with confidence",
+      "status": "pending",
+      "depends_on": ["U3", "U4"],
+      "allowed_paths": [
+        "src/domain_check/verdict.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u5_verdict.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U6",
+      "title": "Bulk mode: many domains, order-preserving, per-domain error isolation",
+      "status": "pending",
+      "depends_on": ["U5"],
+      "allowed_paths": [
+        "src/domain_check/bulk.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u6_bulk.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U7",
+      "title": "JSON results output conforming to schema/results.schema.json, wired into the CLI",
+      "status": "pending",
+      "depends_on": ["U1", "U6"],
+      "allowed_paths": [
+        "src/domain_check/output.py",
+        "src/domain_check/cli.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u7_output.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U8",
+      "title": "Packaging and docs: console entry point, README usage",
+      "status": "pending",
+      "depends_on": ["U7"],
+      "allowed_paths": [
+        "pyproject.toml",
+        "README.md",
+        "src/domain_check/__init__.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u8_packaging.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    }
+  ],
+  "stall": {
+    "max_attempts_per_unit": 3,
+    "no_progress_rounds_before_halt": 2,
+    "on_stall": "Halt the loop, mark the unit failed, and surface the diff plus failing test output for human review."
+  },
+  "cost_envelope": {
+    "max_loop_iterations": 24,
+    "max_wall_clock_hours": 6,
+    "notes": "One unit per iteration; the verify gate must pass for a unit before it is marked done."
+  },
+  "provenance": "Baseline authored best-effort in a cloud session without access to the original LOOP-domaincheck.md spec (local file was unreachable); scope confirmed with the user as an availability-checker CLI."
+}

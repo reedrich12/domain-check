@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/reedrich12/domain-check/main/schema/results.schema.json",
+  "title": "domain-check results",
+  "description": "Output emitted by domain-check --json for one or more checked domains.",
+  "type": "object",
+  "required": ["tool", "version", "checked_at", "results"],
+  "additionalProperties": false,
+  "properties": {
+    "tool": {
+      "const": "domain-check"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+.*$"
+    },
+    "checked_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["domain", "verdict", "confidence", "sources"],
+        "additionalProperties": false,
+        "properties": {
+          "domain": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verdict": {
+            "enum": ["available", "registered", "unknown"]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "sources": {
+            "type": "array",
+            "items": {
+              "enum": ["rdap", "dns"]
+            },
+            "uniqueItems": true
+          },
+          "rdap_status": {
+            "type": ["string", "null"]
+          },
+          "error": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    }
+  }
+}
