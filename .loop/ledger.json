@@ -108,7 +108,7 @@
     {
       "id": "U6",
       "title": "Bulk mode: many domains, order-preserving, per-domain error isolation",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U5"],
       "allowed_paths": [
         "src/domain_check/bulk.py"
