@@ -4,11 +4,26 @@ CLI that checks whether domains are registered or available, using RDAP as the
 authoritative source with a DNS probe as fallback. Supports single and bulk
 input and emits JSON results conforming to `schema/results.schema.json`.
 
-> **Status: baseline-v2.** This repository currently contains only the loop
-> baseline — acceptance tests, verification gate, manifest guard, results
-> schema, and the unit ledger (reconciled to LOOP-domaincheck.md as
-> human-approved amendment A1). No units are implemented yet; the
-> acceptance tests are intentionally red.
+## Install
+
+```sh
+pip install .            # installs the `domain-check` console script
+```
+
+## Usage
+
+```sh
+domain-check example.com                 # human-readable verdict
+domain-check example.com iana.org --json # JSON conforming to the results schema
+domain-check --input domains.txt --json  # bulk: one domain per line, '#' comments
+```
+
+Or without installing: `python -m domain_check ... ` (with `src` on
+`PYTHONPATH`). Exit codes: 0 success, 2 usage error, 3 runtime failure.
+
+`--json` emits the envelope defined by `schema/results.schema.json`:
+verdict (`available` / `registered` / `unknown`), confidence, the evidence
+sources used, and — for every available domain — a `purchase_url`.
 
 ## Loop structure
 

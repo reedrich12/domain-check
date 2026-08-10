@@ -133,7 +133,7 @@
     {
       "id": "U8",
       "title": "Packaging and docs: console entry point, README usage",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U7"],
       "allowed_paths": [
         "pyproject.toml",
