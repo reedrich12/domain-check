@@ -49,3 +49,8 @@
 - **Attempted:** U9 purchase.py (URL builders + attach_purchase_urls) wired into bulk.check_many so available rows always carry purchase_url.
 - **Outcome:** Accepted. 4/4 acceptance, verify 51/51 (U1-U9) exit 0, guard clean. Tagged unit/U9-accepted (d440a9c, local tag only).
 - **Conclusion:** Attaching in check_many (not check_one) keeps the U6 monkeypatch seam intact — patched check_one rows still flow through attach, and non-available rows are untouched so the schema's conditional holds both ways. quote(domain, safe='.-') future-proofs against odd labels without mangling normal names.
+
+## Iteration 11 — 2026-08-10
+- **Attempted:** U10 coverage.py (bootstrap TLD classification, any-service-counts resolvable rule) + CLI --coverage with JSON/text output reusing the rdap bootstrap cache. Then the done-state check: verify.sh --all twice, and a --all --live attempt.
+- **Outcome:** U10 accepted (3/3 acceptance, verify 54/54, guard clean; tagged unit/U10-accepted=12caadb, local tag only). ALL 10 UNITS DONE. verify.sh --all passed twice consecutively (54/54, 54/54). --live: 2/6 passed (example.com registered via DNS fallback; schema conformance); 4 failed solely on sandbox egress policy (HTTPS blocked except GitHub: no RDAP bootstrap, no coverage fetch, no registrar probe). The 'random domain available' failure is the A1 invariant behaving correctly without RDAP: DNS absence -> unknown, never available.
+- **Conclusion:** Offline done-state fully achieved; done_when's remaining requirement (verify.sh --all --live green twice consecutively) is environmentally unreachable here and needs a network-open run. Loop work is complete — nothing left a further iteration could progress.
