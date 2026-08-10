@@ -29,3 +29,8 @@
 - **Attempted:** U5 verdict.py: decide() as an explicit rule cascade with documented confidence tiers (0.99/0.95/0.70/0.60/<=0.40) and sources = signals actually used.
 - **Outcome:** Accepted. 15/15 acceptance (incl. the 8-case A1 invariant matrix), verify 38/38 (U1-U5) exit 0, guard clean. Tagged unit/U5-accepted (fe64661, local tag only).
 - **Conclusion:** Ordering the cascade by RDAP authority first makes the invariant structural: the available branch is only reachable when rdap_status=='available', so no DNS input can produce it. Conflicts resolve toward registered with sources=['dns'] since DNS presence is the deciding evidence.
+
+## Iteration 7 — 2026-08-10
+- **Attempted:** U6 bulk.py: check_one pipeline row builder, check_many with try/except per domain, read_domains file parser.
+- **Outcome:** Accepted. 3/3 acceptance, verify 41/41 (U1-U6) exit 0, guard clean. Tagged unit/U6-accepted (c754916, local tag only).
+- **Conclusion:** Call check_one via module-global lookup inside check_many so monkeypatch works; skip the DNS probe when RDAP already said registered (halves query volume on the common case). Error rows use str(exc) with class-name fallback so the error field is never empty.
