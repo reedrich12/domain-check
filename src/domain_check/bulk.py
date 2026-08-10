@@ -8,7 +8,7 @@ batch — its row carries verdict "unknown" and a non-empty error string.
 
 from pathlib import Path
 
-from domain_check import dnscheck, rdap
+from domain_check import dnscheck, purchase, rdap
 from domain_check.validate import normalize
 from domain_check.verdict import decide
 
@@ -49,7 +49,9 @@ def check_many(domains: list[str]) -> list[dict]:
                     "error": str(exc) or exc.__class__.__name__,
                 }
             )
-    return results
+    # U9: every available row carries a registrar purchase link, as the
+    # results schema requires.
+    return purchase.attach_purchase_urls(results)
 
 
 def read_domains(path: str | Path) -> list[str]:

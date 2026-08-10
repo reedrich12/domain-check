@@ -147,7 +147,7 @@
     {
       "id": "U9",
       "title": "Purchase-link builder: registrar search URL for every available domain (primary Porkbun, fallback Namecheap)",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U7"],
       "allowed_paths": [
         "src/domain_check/purchase.py",
