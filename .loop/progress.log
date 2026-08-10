@@ -1,3 +1,4 @@
 iter=1 units_accepted=0 tests_passing=0 note=handoff-gate-contradiction
 iter=2 units_accepted=1 tests_passing=3 note=U1-accepted
 iter=2 addendum: unit/U1-accepted=0e6ece1 (tags are local-only: env push policy 403s non-branch refs; accepted SHAs recorded here as durable fallback)
+iter=3 units_accepted=2 tests_passing=15 note=U2-accepted=1c8290a

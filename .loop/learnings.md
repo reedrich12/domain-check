@@ -9,3 +9,8 @@
 - **Attempted:** Applied human-approved amendment A2' (ledger-selected verify step 5 + --all flag, done_when = --all --live twice consecutively), then implemented U1 (CLI skeleton: argparse with DOMAIN positionals, --json, --input, --version; exit 2 on no input, exit 3 for not-yet-wired lookups).
 - **Outcome:** U1 accepted. tests/test_u1_cli.py 3/3 passed; ledger-selected verify.sh exit 0; manifest guard clean. Tagged unit/U1-accepted.
 - **Conclusion:** parser.exit(2, msg) gives the usage-error contract cleanly; keep __version__ in __init__.py as the single version source (U8 asserts it matches pyproject). The A2' gate gives true per-unit feedback — first green verify with an active unit.
+
+## Iteration 3 — 2026-08-10
+- **Attempted:** U2 validate.py: normalize() with lowercase/trailing-dot strip, per-label punycode via Python's idna codec, LDH regex per label, 253-octet total cap.
+- **Outcome:** Accepted. 12/12 acceptance, verify 15/15 (U1+U2) exit 0, guard clean. Tagged unit/U2-accepted (1c8290a, local tag only).
+- **Conclusion:** Convert IDN labels to punycode BEFORE regex/length checks so limits apply to wire format; the idna codec handles per-label encoding cleanly. Validate each label with one LDH regex rather than separate hyphen/charset checks.
