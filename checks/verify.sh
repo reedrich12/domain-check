@@ -29,7 +29,7 @@ import json
 with open(".loop/ledger.json") as fh:
     ledger = json.load(fh)
 ids = [u["id"] for u in ledger["units"]]
-assert ids == [f"U{i}" for i in range(1, 9)], f"unexpected unit ids: {ids}"
+assert ids == [f"U{i}" for i in range(1, 11)], f"unexpected unit ids: {ids}"
 for unit in ledger["units"]:
     assert unit["status"] in {"pending", "in_progress", "done", "failed"}, unit
     assert unit["allowed_paths"], f"{unit['id']} has no allowed_paths"

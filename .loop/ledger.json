@@ -1,7 +1,7 @@
 {
-  "version": 1,
-  "goal": "Implement domain-check: a CLI that reports whether domains are registered or available via RDAP with DNS fallback, with bulk input and schema-conformant JSON output.",
-  "done_when": "All units U1-U8 have status=done, checks/verify.sh passes offline, and checks/verify.sh --live passes against real RDAP/DNS.",
+  "version": 2,
+  "goal": "Implement domain-check: a CLI that reports whether domains are registered or available via RDAP with DNS fallback, with bulk input, purchase links for available domains, TLD coverage reporting, and schema-conformant JSON output.",
+  "done_when": "All units U1-U10 have status=done, checks/verify.sh passes offline, and checks/verify.sh --live passes twice consecutively (two full green runs back-to-back).",
   "protocol": {
     "one_unit_per_iteration": true,
     "unit_lifecycle": ["pending", "in_progress", "done", "failed"],
@@ -9,10 +9,26 @@
       "Pick the first pending unit whose dependencies are all done; set it in_progress.",
       "Only touch files listed in the unit's allowed_paths (plus this ledger). manifest_guard.py enforces this.",
       "A unit is done only when its acceptance command passes AND checks/verify.sh does not regress previously-done units.",
-      "Never edit files under tests/, tests_live/, checks/, or schema/ — the baseline gate is immutable during the loop.",
+      "Never edit files under tests/, tests_live/, checks/, or schema/ during loop iterations — the baseline gate is immutable except via a human-approved amendment logged below.",
       "On acceptance failure, increment attempts; at max_attempts mark the unit failed and halt."
     ]
   },
+  "amendments": [
+    {
+      "id": "A1",
+      "date": "2026-08-10",
+      "approved_by": "human (reedrich12)",
+      "reason": "baseline built without spec; reconciled",
+      "changes": [
+        "schema/results.schema.json: optional purchase_url (string, uri format) on result rows, required whenever verdict is 'available'",
+        "added U9 purchase-link builder: registrar search URL per available domain; primary Porkbun, fallback Namecheap, recorded in README; offline tests in tests/test_u9_purchase.py plus live probe (HTTP <400, body echoes domain) in tests_live/test_live_purchase.py",
+        "added U10 --coverage report: >=1000 resolvable TLD endpoints from the cached IANA bootstrap asserted live in tests_live/test_live_coverage.py; unresolvable TLDs listed by name, never hidden; offline contract in tests/test_u10_coverage.py",
+        "tests/test_u5_verdict.py: invariant that DNS evidence alone can never produce verdict 'available'; DNS only raises/lowers confidence or confirms 'registered'; RDAP absence with no other authority is 'unknown'",
+        "done_when: all units done AND checks/verify.sh --live passes twice consecutively",
+        "tests/test_u7_output.py: available example row carries purchase_url per the amended schema"
+      ]
+    }
+  ],
   "units": [
     {
       "id": "U1",
@@ -114,6 +130,34 @@
       "acceptance": "python -m pytest tests/test_u8_packaging.py -q",
       "attempts": 0,
       "max_attempts": 3
+    },
+    {
+      "id": "U9",
+      "title": "Purchase-link builder: registrar search URL for every available domain (primary Porkbun, fallback Namecheap)",
+      "status": "pending",
+      "depends_on": ["U7"],
+      "allowed_paths": [
+        "src/domain_check/purchase.py",
+        "src/domain_check/cli.py",
+        "src/domain_check/bulk.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u9_purchase.py -q",
+      "attempts": 0,
+      "max_attempts": 3
+    },
+    {
+      "id": "U10",
+      "title": "--coverage report: resolvable vs unresolvable TLDs from the cached IANA bootstrap, unresolvable listed by name",
+      "status": "pending",
+      "depends_on": ["U1", "U3"],
+      "allowed_paths": [
+        "src/domain_check/coverage.py",
+        "src/domain_check/cli.py",
+        "src/domain_check/rdap.py"
+      ],
+      "acceptance": "python -m pytest tests/test_u10_coverage.py -q",
+      "attempts": 0,
+      "max_attempts": 3
     }
   ],
   "stall": {
@@ -122,9 +166,9 @@
     "on_stall": "Halt the loop, mark the unit failed, and surface the diff plus failing test output for human review."
   },
   "cost_envelope": {
-    "max_loop_iterations": 24,
+    "max_loop_iterations": 30,
     "max_wall_clock_hours": 6,
-    "notes": "One unit per iteration; the verify gate must pass for a unit before it is marked done."
+    "notes": "One unit per iteration; the verify gate must pass for a unit before it is marked done. Iteration cap raised from 24 to 30 with amendment A1 (two extra units plus the double live-pass done gate)."
   },
-  "provenance": "Baseline authored best-effort in a cloud session without access to the original LOOP-domaincheck.md spec (local file was unreachable); scope confirmed with the user as an availability-checker CLI."
+  "provenance": "Baseline authored best-effort in a cloud session without access to the original LOOP-domaincheck.md spec (local file was unreachable); scope confirmed with the user as an availability-checker CLI. Amendment A1 reconciles the baseline against the spec's requirements as relayed and approved by the user."
 }

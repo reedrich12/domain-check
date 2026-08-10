@@ -48,10 +48,29 @@
           "rdap_status": {
             "type": ["string", "null"]
           },
+          "purchase_url": {
+            "type": "string",
+            "format": "uri"
+          },
           "error": {
             "type": ["string", "null"]
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "verdict": {
+                  "const": "available"
+                }
+              },
+              "required": ["verdict"]
+            },
+            "then": {
+              "required": ["purchase_url"]
+            }
+          }
+        ]
       }
     }
   }
