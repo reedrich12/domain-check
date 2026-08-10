@@ -1,14 +1,14 @@
 {
   "version": 2,
   "goal": "Implement domain-check: a CLI that reports whether domains are registered or available via RDAP with DNS fallback, with bulk input, purchase links for available domains, TLD coverage reporting, and schema-conformant JSON output.",
-  "done_when": "All units U1-U10 have status=done, checks/verify.sh passes offline, and checks/verify.sh --live passes twice consecutively (two full green runs back-to-back).",
+  "done_when": "All units U1-U10 have status=done and checks/verify.sh --all --live passes twice consecutively (two full green runs back-to-back). Ledger-selected verification is per-iteration feedback only and can never satisfy done_when.",
   "protocol": {
     "one_unit_per_iteration": true,
     "unit_lifecycle": ["pending", "in_progress", "done", "failed"],
     "rules": [
       "Pick the first pending unit whose dependencies are all done; set it in_progress.",
       "Only touch files listed in the unit's allowed_paths (plus this ledger). manifest_guard.py enforces this.",
-      "A unit is done only when its acceptance command passes AND checks/verify.sh does not regress previously-done units.",
+      "A unit is done only when its own acceptance command passes AND ledger-selected checks/verify.sh shows no regression in previously-done units.",
       "Never edit files under tests/, tests_live/, checks/, or schema/ during loop iterations — the baseline gate is immutable except via a human-approved amendment logged below.",
       "On acceptance failure, increment attempts; at max_attempts mark the unit failed and halt."
     ]
@@ -26,6 +26,19 @@
         "tests/test_u5_verdict.py: invariant that DNS evidence alone can never produce verdict 'available'; DNS only raises/lowers confidence or confirms 'registered'; RDAP absence with no other authority is 'unknown'",
         "done_when: all units done AND checks/verify.sh --live passes twice consecutively",
         "tests/test_u7_output.py: available example row carries purchase_url per the amended schema"
+      ]
+    },
+    {
+      "id": "A2-prime",
+      "date": "2026-08-10",
+      "approved_by": "human (reedrich12)",
+      "reason": "verify.sh full-suite step 5 could not exit 0 until all units existed (collection errors on missing modules), making per-unit acceptance from its exit code impossible; approved as A2 with two modifications",
+      "changes": [
+        "checks/verify.sh step 5 is ledger-selected: runs acceptance tests of units with status done or in_progress; selection is monotonic (tests of done units always included)",
+        "checks/verify.sh gains an --all flag running the full offline suite regardless of ledger status; --all and --live compose",
+        "done_when now requires checks/verify.sh --all --live to pass twice consecutively; ledger-selected verification is per-iteration feedback only and can never satisfy done_when",
+        "per-unit protocol corrected: a unit is done when its own acceptance command passes AND ledger-selected verify.sh shows no regression in previously-done units",
+        "confirmed the 10-unit ledger governs over the loop prompt's earlier '8 units' wording"
       ]
     }
   ],
