@@ -44,3 +44,8 @@
 - **Attempted:** U8: README Install/Usage sections (--json, --input, exit codes); entry point and version parity already existed from U1/baseline.
 - **Outcome:** Accepted. 3/3 acceptance, verify 47/47 (U1-U8) exit 0, guard clean. Tagged unit/U8-accepted (6ae7628, local tag only).
 - **Conclusion:** Docs-only unit; replacing the stale 'baseline only, tests red' banner mattered as much as adding usage — README now describes the shipped CLI, not the scaffold. Smallest unit so far; front-loading pyproject in the baseline made it so.
+
+## Iteration 10 — 2026-08-10
+- **Attempted:** U9 purchase.py (URL builders + attach_purchase_urls) wired into bulk.check_many so available rows always carry purchase_url.
+- **Outcome:** Accepted. 4/4 acceptance, verify 51/51 (U1-U9) exit 0, guard clean. Tagged unit/U9-accepted (d440a9c, local tag only).
+- **Conclusion:** Attaching in check_many (not check_one) keeps the U6 monkeypatch seam intact — patched check_one rows still flow through attach, and non-available rows are untouched so the schema's conditional holds both ways. quote(domain, safe='.-') future-proofs against odd labels without mangling normal names.
