@@ -161,7 +161,7 @@
     {
       "id": "U10",
       "title": "--coverage report: resolvable vs unresolvable TLDs from the cached IANA bootstrap, unresolvable listed by name",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U1", "U3"],
       "allowed_paths": [
         "src/domain_check/coverage.py",

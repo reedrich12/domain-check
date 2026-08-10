@@ -7,9 +7,38 @@ Exit codes: 0 success, 2 usage error, 3 runtime failure.
 """
 
 import argparse
+import json
 import sys
 
 from domain_check import __version__, bulk, output
+
+
+def _run_coverage(as_json: bool) -> int:
+    from domain_check import coverage
+
+    try:
+        rep = coverage.live_report()
+    except Exception as exc:
+        print(f"domain-check: coverage failed: {exc}", file=sys.stderr)
+        return 3
+    if as_json:
+        print(
+            json.dumps(
+                {
+                    "total_tlds": rep.total_tlds,
+                    "resolvable": len(rep.resolvable),
+                    "unresolvable": rep.unresolvable,
+                },
+                indent=2,
+            )
+        )
+    else:
+        print(f"TLDs in bootstrap: {rep.total_tlds}")
+        print(f"resolvable: {len(rep.resolvable)}")
+        print(f"unresolvable: {len(rep.unresolvable)}")
+        for tld in rep.unresolvable:
+            print(f"  {tld}")
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -37,6 +66,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="read domains from FILE (one per line, '#' comments allowed)",
     )
     parser.add_argument(
+        "--coverage",
+        action="store_true",
+        help=(
+            "report resolvable vs unresolvable TLDs from the cached IANA "
+            "RDAP bootstrap (unresolvable TLDs are listed by name)"
+        ),
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"domain-check {__version__}",
@@ -47,6 +84,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
+
+    if args.coverage:
+        return _run_coverage(as_json=args.json)
 
     if not args.domains and not args.input:
         parser.print_usage(sys.stderr)
