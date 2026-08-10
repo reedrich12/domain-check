@@ -34,3 +34,8 @@
 - **Attempted:** U6 bulk.py: check_one pipeline row builder, check_many with try/except per domain, read_domains file parser.
 - **Outcome:** Accepted. 3/3 acceptance, verify 41/41 (U1-U6) exit 0, guard clean. Tagged unit/U6-accepted (c754916, local tag only).
 - **Conclusion:** Call check_one via module-global lookup inside check_many so monkeypatch works; skip the DNS probe when RDAP already said registered (halves query volume on the common case). Error rows use str(exc) with class-name fallback so the error field is never empty.
+
+## Iteration 8 — 2026-08-10
+- **Attempted:** U7 output.py (envelope with UTC Z timestamp) + cli.py wiring (bulk.check_many over positionals and --input, --json vs text output).
+- **Outcome:** Accepted. 3/3 acceptance, verify 44/44 (U1-U7) exit 0 including U1's CLI contract unregressed, guard clean. Tagged unit/U7-accepted (5576374, local tag only).
+- **Conclusion:** isoformat(timespec='seconds').replace('+00:00','Z') satisfies both the schema's date-time format and the test's Z/+ check. Rows pass through untouched so U9's purchase_url will flow into the envelope without output.py changes.
