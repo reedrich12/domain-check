@@ -120,7 +120,7 @@
     {
       "id": "U7",
       "title": "JSON results output conforming to schema/results.schema.json, wired into the CLI",
-      "status": "pending",
+      "status": "done",
       "depends_on": ["U1", "U6"],
       "allowed_paths": [
         "src/domain_check/output.py",

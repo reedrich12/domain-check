@@ -1,15 +1,15 @@
 """Command-line interface for domain-check.
 
-U1 scope: argument parsing, usage, version, exit codes. Lookup wiring
-arrives with U7 (output) and U9 (purchase links).
+U1: argument parsing, usage, version, exit codes.
+U7: lookups wired through bulk.check_many with --json output.
 
-Exit codes: 0 success, 2 usage error, 3 runtime failure / not implemented.
+Exit codes: 0 success, 2 usage error, 3 runtime failure.
 """
 
 import argparse
 import sys
 
-from domain_check import __version__
+from domain_check import __version__, bulk, output
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -52,8 +52,24 @@ def main(argv: list[str] | None = None) -> int:
         parser.print_usage(sys.stderr)
         parser.exit(2, "domain-check: error: provide at least one DOMAIN or --input FILE\n")
 
-    print("domain-check: lookups not implemented yet (pending units U2-U7)", file=sys.stderr)
-    return 3
+    domains = []
+    if args.input:
+        try:
+            domains.extend(bulk.read_domains(args.input))
+        except OSError as exc:
+            print(f"domain-check: cannot read {args.input}: {exc}", file=sys.stderr)
+            return 3
+    domains.extend(args.domains)
+
+    rows = bulk.check_many(domains)
+
+    if args.json:
+        print(output.to_json(rows))
+    else:
+        for row in rows:
+            detail = row["error"] or f"confidence {row['confidence']:.2f}"
+            print(f"{row['domain']}: {row['verdict']} ({detail})")
+    return 0
 
 
 if __name__ == "__main__":
