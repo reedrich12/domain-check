@@ -60,7 +60,7 @@
     {
       "id": "U2",
       "title": "Domain validation and normalization (case, trailing dot, IDN/punycode)",
-      "status": "pending",
+      "status": "done",
       "depends_on": [],
       "allowed_paths": [
         "src/domain_check/validate.py"
