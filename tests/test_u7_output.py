@@ -31,6 +31,7 @@ ROWS = [
         "confidence": 0.95,
         "sources": ["rdap", "dns"],
         "rdap_status": None,
+        "purchase_url": "https://porkbun.com/checkout/search?q=surely-free-4q7x9z.com",
         "error": None,
     },
 ]

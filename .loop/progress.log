@@ -1,0 +1,13 @@
+iter=1 units_accepted=0 tests_passing=0 note=handoff-gate-contradiction
+iter=2 units_accepted=1 tests_passing=3 note=U1-accepted
+iter=2 addendum: unit/U1-accepted=0e6ece1 (tags are local-only: env push policy 403s non-branch refs; accepted SHAs recorded here as durable fallback)
+iter=3 units_accepted=2 tests_passing=15 note=U2-accepted=1c8290a
+iter=4 units_accepted=3 tests_passing=19 note=U3-accepted=61df64b
+iter=5 units_accepted=4 tests_passing=23 note=U4-accepted=482841c
+iter=6 units_accepted=5 tests_passing=38 note=U5-accepted=fe64661
+iter=7 units_accepted=6 tests_passing=41 note=U6-accepted=c754916
+iter=8 units_accepted=7 tests_passing=44 note=U7-accepted=5576374
+iter=9 units_accepted=8 tests_passing=47 note=U8-accepted=6ae7628
+iter=10 units_accepted=9 tests_passing=51 note=U9-accepted=d440a9c
+iter=11 units_accepted=10 tests_passing=54 note=U10-accepted=12caadb;all-gate-green-x2;live-blocked-by-sandbox-egress
+iter=12 units_accepted=10 tests_passing=60 note=done_when-satisfied;--all--live-green-x2(54+6);coverage=1198/1200
