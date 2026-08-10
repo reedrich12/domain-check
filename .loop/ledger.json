@@ -46,7 +46,7 @@
     {
       "id": "U1",
       "title": "CLI skeleton: argument parsing, usage, version, exit codes",
-      "status": "pending",
+      "status": "done",
       "depends_on": [],
       "allowed_paths": [
         "src/domain_check/cli.py",
