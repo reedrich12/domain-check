@@ -13,7 +13,9 @@ Contract: domain_check.bulk exposes
 from domain_check import bulk
 
 
-def ok_row(domain: str) -> dict:
+def ok_row(domain: str, **_options) -> dict:
+    # **_options absorbs per-call options such as use_whois, so this stub
+    # keeps standing in for check_one as its keyword options grow.
     return {
         "domain": domain,
         "verdict": "registered",
@@ -28,10 +30,14 @@ def test_check_many_preserves_order(monkeypatch):
     monkeypatch.setattr(bulk, "check_one", ok_row)
     results = bulk.check_many(["b.com", "a.com", "c.com"])
     assert [r["domain"] for r in results] == ["b.com", "a.com", "c.com"]
+    # The stub must actually have been reached: if check_many called it in a
+    # way it could not accept, every row would silently become an error row.
+    assert [r["verdict"] for r in results] == ["registered"] * 3
+    assert all(r["error"] is None for r in results)
 
 
 def test_one_failure_does_not_abort_the_batch(monkeypatch):
-    def flaky(domain: str) -> dict:
+    def flaky(domain: str, **_options) -> dict:
         if domain == "boom.com":
             raise RuntimeError("lookup exploded")
         return ok_row(domain)

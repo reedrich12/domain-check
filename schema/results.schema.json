@@ -41,7 +41,7 @@
           "sources": {
             "type": "array",
             "items": {
-              "enum": ["rdap", "dns"]
+              "enum": ["rdap", "dns", "whois"]
             },
             "uniqueItems": true
           },

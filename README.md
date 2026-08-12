@@ -16,6 +16,7 @@ pip install .            # installs the `domain-check` console script
 domain-check example.com                 # human-readable verdict
 domain-check example.com iana.org --json # JSON conforming to the results schema
 domain-check --input domains.txt --json  # bulk: one domain per line, '#' comments
+domain-check example.com --whois         # add a WHOIS fallback when RDAP is unsure
 ```
 
 Or without installing: `python -m domain_check ... ` (with `src` on
@@ -56,9 +57,32 @@ checks/verify.sh --live   # offline gate + live RDAP/DNS acceptance tests
 - **U9** Purchase-link builder: registrar search URL for every available domain
 - **U10** `--coverage` report: resolvable vs unresolvable TLDs from the cached IANA bootstrap
 
-Verdicts also obey a hard invariant (amendment A1): DNS evidence alone can
-never produce "available" — DNS only raises/lowers confidence or confirms
-"registered". RDAP absence with no other authority yields "unknown".
+Verdicts obey a hard invariant (amendment A1): only a **registry authority**
+can assert "available". DNS evidence alone can never produce it — DNS only
+raises/lowers confidence or confirms "registered", because unregistered and
+registered-but-unresolving domains look identical to DNS. With no authority
+at all the verdict is "unknown".
+
+## WHOIS fallback (`--whois`)
+
+RDAP is the primary authority, but some registries are unreachable,
+throttling, or have no RDAP service — those all classify as `unknown`
+rather than guessing. Passing `--whois` consults port-43 WHOIS in exactly
+that case:
+
+- **Only when RDAP returned no authority.** An RDAP ruling is never
+  overridden, and no WHOIS query is spent when RDAP already answered.
+- The TLD's WHOIS server is discovered via IANA's referral, then the
+  response is classified: not-found text → available, registration fields →
+  registered, throttling/refusals/anything unrecognized → `unknown`.
+- WHOIS is a registry authority, so like RDAP it **may** assert
+  "available" — but it scores slightly lower (0.90 corroborated by absent
+  DNS, 0.65 alone, versus RDAP's 0.95/0.70) because its responses are free
+  text parsed heuristically.
+- Rows resolved this way carry `"whois"` in `sources`.
+
+It is off by default: WHOIS adds two round trips per domain and is
+aggressively rate-limited by several registries.
 
 ## Registrar choice (U9)
 
