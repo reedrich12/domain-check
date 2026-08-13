@@ -66,6 +66,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="read domains from FILE (one per line, '#' comments allowed)",
     )
     parser.add_argument(
+        "--whois",
+        action="store_true",
+        help=(
+            "fall back to a WHOIS lookup when RDAP returns no authority "
+            "(slower; WHOIS responses are free text and parsed heuristically)"
+        ),
+    )
+    parser.add_argument(
         "--coverage",
         action="store_true",
         help=(
@@ -101,7 +109,7 @@ def main(argv: list[str] | None = None) -> int:
             return 3
     domains.extend(args.domains)
 
-    rows = bulk.check_many(domains)
+    rows = bulk.check_many(domains, use_whois=args.whois)
 
     if args.json:
         print(output.to_json(rows))

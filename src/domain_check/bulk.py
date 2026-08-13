@@ -8,12 +8,12 @@ batch — its row carries verdict "unknown" and a non-empty error string.
 
 from pathlib import Path
 
-from domain_check import dnscheck, purchase, rdap
+from domain_check import dnscheck, purchase, rdap, whois
 from domain_check.validate import normalize
 from domain_check.verdict import decide
 
 
-def check_one(domain: str) -> dict:
+def check_one(domain: str, *, use_whois: bool = False) -> dict:
     """Check a single domain and return one result row."""
     name = normalize(domain)
     rdap_result = rdap.lookup(name)
@@ -21,7 +21,15 @@ def check_one(domain: str) -> dict:
     if rdap_result.status != "registered":
         # Only spend a DNS query when RDAP wasn't authoritative.
         dns_status = dnscheck.probe(name)
-    verdict = decide(rdap_status=rdap_result.status, dns_status=dns_status)
+    whois_status = None
+    if use_whois and rdap_result.status == "unknown":
+        # Fallback authority, consulted only when RDAP told us nothing.
+        whois_status = whois.probe(name)
+    verdict = decide(
+        rdap_status=rdap_result.status,
+        dns_status=dns_status,
+        whois_status=whois_status,
+    )
     return {
         "domain": name,
         "verdict": verdict.verdict,
@@ -32,12 +40,12 @@ def check_one(domain: str) -> dict:
     }
 
 
-def check_many(domains: list[str]) -> list[dict]:
+def check_many(domains: list[str], *, use_whois: bool = False) -> list[dict]:
     results = []
     for domain in domains:
         try:
             # Late-bound module lookup so tests can monkeypatch check_one.
-            results.append(check_one(domain))
+            results.append(check_one(domain, use_whois=use_whois))
         except Exception as exc:
             results.append(
                 {
