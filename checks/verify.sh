@@ -2,16 +2,20 @@
 # Independent verification gate for domain-check.
 #
 # Usage:
-#   checks/verify.sh              # offline gate; step 4 tests ledger-selected units
-#                                 # (status done or in_progress) - per-iteration feedback
-#   checks/verify.sh --all        # step 4 runs the FULL offline suite regardless of ledger
+#   checks/verify.sh              # offline gate: the FULL suite under tests/
 #   checks/verify.sh --live       # adds live RDAP/DNS/WHOIS tests (tests_live/)
-#   checks/verify.sh --all --live # the done_when gate: must pass twice consecutively
+#   checks/verify.sh --all --live # same as --live; --all is kept as a no-op so
+#                                 # the done_when command in .loop/ledger.json
+#                                 # stays literally valid
 #
 # Exit code 0 means the gate passed. Any other exit code means the gate is red.
-# Amendment A2': ledger-selected step 4 can never satisfy done_when; only
-# --all --live (twice consecutively) can. Selection is monotonic: tests of
-# done units are always included.
+#
+# Step 4 used to run only the test files named in ledger unit acceptance
+# commands (amendment A2'), which let the loop verify one unit at a time
+# without the not-yet-written units failing collection. With every unit done
+# that selection only hid things: any test file not owned by a unit - such as
+# tests/test_whois.py - was silently skipped, so the default reported 54
+# passing while the real total was 78. The default is now the whole suite.
 #
 # The manifest guard was retired from this gate once the loop completed. It
 # enforced that an in-progress unit touched only its declared paths and that
@@ -21,11 +25,10 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-MODE_ALL=0
 MODE_LIVE=0
 for arg in "$@"; do
     case "$arg" in
-        --all) MODE_ALL=1 ;;
+        --all) ;;  # retained as a no-op: the full suite is now the default
         --live|live) MODE_LIVE=1 ;;
         offline) ;;
         *) echo "verify.sh: unknown argument: $arg" >&2; exit 64 ;;
@@ -58,32 +61,8 @@ for unit in ledger["units"]:
 print("ledger ok")
 PY
 
-if [ "$MODE_ALL" = "1" ]; then
-    echo "==> [4/4] offline acceptance tests (--all: full suite)"
-    python3 -m pytest tests/ -q
-else
-    echo "==> [4/4] offline acceptance tests (ledger-selected: done + in_progress units)"
-    UNIT_TESTS=$(python3 - <<'PY'
-import json
-import re
-
-with open(".loop/ledger.json") as fh:
-    ledger = json.load(fh)
-paths = []
-for unit in ledger["units"]:
-    if unit["status"] in ("done", "in_progress"):
-        match = re.search(r"tests/\S+\.py", unit["acceptance"])
-        if match and match.group(0) not in paths:
-            paths.append(match.group(0))
-print(" ".join(paths))
-PY
-)
-    if [ -n "$UNIT_TESTS" ]; then
-        python3 -m pytest $UNIT_TESTS -q
-    else
-        echo "no units done or in_progress yet - nothing to test"
-    fi
-fi
+echo "==> [4/4] offline acceptance tests (full suite)"
+python3 -m pytest tests/ -q
 
 if [ "$MODE_LIVE" = "1" ]; then
     echo "==> [live] live acceptance tests (real RDAP/DNS)"
